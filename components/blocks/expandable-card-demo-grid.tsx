@@ -4,6 +4,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import axios from "axios";
+import Link from 'next/link';
 
 interface Product {
   description: string;
@@ -14,9 +15,7 @@ interface Product {
 }
 
 export default function ExpandableCardDemo() {
-  const [active, setActive] = useState<
-    (typeof products)[number] | boolean | null
-  >(null);
+  const [active, setActive] = useState<(typeof products)[number] | boolean | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const id = useId();
@@ -36,6 +35,7 @@ export default function ExpandableCardDemo() {
 
     fetchProducts();
   }, []);
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -56,36 +56,27 @@ export default function ExpandableCardDemo() {
   useOutsideClick(ref, () => setActive(null));
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <AnimatePresence>
         {active && typeof active === "object" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 h-full w-full z-10"
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm h-full w-full z-50"
           />
         )}
       </AnimatePresence>
       <AnimatePresence>
         {active && typeof active === "object" ? (
-          <div className="fixed inset-0  grid place-items-center z-[100]">
+          <div className="fixed inset-0 flex items-center justify-center z-[60]">
             <motion.button
               key={`button-${active.name}-${id}`}
               layout
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              exit={{
-                opacity: 0,
-                transition: {
-                  duration: 0.05,
-                },
-              }}
-              className="flex absolute top-10 right-10 lg:hidden items-center justify-center bg-white rounded-full h-6 w-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+              className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg"
               onClick={() => setActive(null)}
             >
               <CloseIcon />
@@ -93,123 +84,102 @@ export default function ExpandableCardDemo() {
             <motion.div
               layoutId={`card-${active.name}-${id}`}
               ref={ref}
-              className="w-full max-w-[500px]  h-full md:h-fit md:max-h-[90%]  flex flex-col bg-white dark:bg-neutral-900 sm:rounded-3xl overflow-hidden"
+              className="w-full max-w-4xl bg-white shadow-2xl overflow-hidden"
             >
-              <motion.div layoutId={`image-${active.name}-${id}`}>
-                <Image
-                  priority
-                  width={200}
-                  height={200}
-                  src={
-                    "https://upload.wikimedia.org/wikipedia/commons/0/01/Teh_Botol_Sosro.jpg"
-                  }
-                  alt={active.name}
-                  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                />
-              </motion.div>
-
-              <div>
-                <div className="flex justify-between items-start p-4">
-                  <div className="text-left">
-                    <motion.h3
-                      layoutId={`name-${active.name}-${id}`}
-                      className="font-black text-slate-700 dark:text-neutral-200  text-start"
-                    >
-                      {active.name}
-                    </motion.h3>
+              <div className="flex flex-col md:flex-row">
+                <motion.div layoutId={`image-${active.name}-${id}`} className="md:w-1/2 relative">
+                  <Image
+                    priority
+                    width={600}
+                    height={600}
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kinder_Joy_packaging.jpg/375px-Kinder_Joy_packaging.jpg"
+                    alt={active.name}
+                    className="w-full h-64 md:h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <motion.h3
+                    layoutId={`name-${active.name}-${id}`}
+                    className="absolute bottom-4 left-4 text-3xl font-bold text-white"
+                  >
+                    {active.name}
+                  </motion.h3>
+                </motion.div>
+                <div className="p-8 md:w-1/2 flex flex-col justify-between bg-white">
+                  <div>
                     <motion.p
                       layoutId={`description-${active.description}-${id}`}
-                      className="text-neutral-600 dark:text-neutral-400 "
+                      className="text-gray-600 mb-6 text-lg"
                     >
                       {active.description}
                     </motion.p>
+                    <motion.p className="text-4xl font-bold text-black mb-8">
+                      Rp. {active.price.toLocaleString()}
+                    </motion.p>
                   </div>
-
-                  <motion.a
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    href={"/"}
-                    target="_blank"
-                    className="px-4 py-3 text-sm rounded-full font-bold bg-slate-500 text-white"
-                  >
-                    {"Lelang"}
-                  </motion.a>
-                </div>
-                <div className="pt-4 relative px-4">
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-slate-600 text-xs md:text-sm lg:text-base h-40 md:h-fit pb-10 flex flex-col items-start gap-4 overflow-auto dark:text-neutral-400 [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch]"
-                  >
-                    Rp. {active.price}
-                  </motion.div>
+                  <div className="space-y-4">
+                    <button className="w-full bg-black text-white py-3 px-4 text-lg font-semibold hover:bg-gray-800 transition duration-300">
+                      Tambah Keranjang
+                    </button>
+                    <Link href={`/lelang/${id}`}>
+                      <button className="w-full bg-white text-black py-3 px-4 text-lg font-semibold border-2 border-black hover:bg-gray-100 transition duration-300">
+                        Lelang
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </motion.div>
           </div>
         ) : null}
       </AnimatePresence>
-      <ul className="max-w-2xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 items-start gap-4">
-        {products.map((card, index) => (
-          <motion.div
-            layoutId={`card-${card.name}-${id}`}
-            key={card.name}
-            onClick={() => setActive(card)}
-            className="p-4 flex flex-col  hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer"
-          >
-            <div className="flex gap-4 flex-col  w-full">
-              <motion.div layoutId={`image-${card.name}-${id}`}>
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-4xl font-extrabold text-black mb-12 text-center">Produk Eksklusif</h2>
+        <ul className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((card) => (
+            <motion.li
+              layoutId={`card-${card.name}-${id}`}
+              key={card.name}
+              onClick={() => setActive(card)}
+              className="bg-white overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer group"
+            >
+              <motion.div layoutId={`image-${card.name}-${id}`} className="relative">
                 <Image
-                  width={100}
-                  height={100}
-                  src={
-                    "https://upload.wikimedia.org/wikipedia/commons/0/01/Teh_Botol_Sosro.jpg"
-                  }
+                  width={400}
+                  height={300}
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kinder_Joy_packaging.jpg/1024px-Kinder_Joy_packaging.jpg"
                   alt={card.name}
-                  className="h-60 w-full  rounded-lg object-cover object-top"
+                  className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.div>
-              <div className="flex justify-center items-center flex-col">
+              <div className="p-6">
                 <motion.h3
                   layoutId={`name-${card.name}-${id}`}
-                  className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left text-base"
+                  className="text-xl font-bold text-black mb-2 group-hover:text-gray-700 transition-colors duration-300"
                 >
                   {card.name}
                 </motion.h3>
                 <motion.p
                   layoutId={`description-${card.description}-${id}`}
-                  className="text-neutral-600 dark:text-neutral-400 text-center md:text-left text-base"
+                  className="text-gray-600 mb-4 line-clamp-2"
                 >
-                  Rp. {card.price}
+                  {card.description}
+                </motion.p>
+                <motion.p className="text-2xl font-bold text-black">
+                  Rp. {card.price.toLocaleString()}
                 </motion.p>
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </ul>
-    </>
+            </motion.li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 
 export const CloseIcon = () => {
   return (
-    <motion.svg
-      initial={{
-        opacity: 0,
-      }}
-      animate={{
-        opacity: 1,
-      }}
-      exit={{
-        opacity: 0,
-        transition: {
-          duration: 0.05,
-        },
-      }}
+    <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -219,11 +189,11 @@ export const CloseIcon = () => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-4 w-4 text-black"
+      className="h-6 w-6 text-gray-500"
     >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M18 6l-12 12" />
+      <path d="M18 6L6 18" />
       <path d="M6 6l12 12" />
-    </motion.svg>
+    </svg>
   );
 };
+

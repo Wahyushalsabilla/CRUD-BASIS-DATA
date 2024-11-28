@@ -52,34 +52,42 @@ export default function SigninForm() {
   };
 
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-      <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Sign in ke <span className="font-black text-foreground">pelelang</span>
+    <div className="max-w-md w-full mx-auto p-8 bg-white text-black shadow-lg border border-neutral-300 rounded-lg">
+      <h2 className="text-3xl font-semibold text-neutral-800 text-center mb-6">
+        Welcome to{" "}
+        <span className="font-extrabold text-neutral-900 underline decoration-black">
+          EstherShop
+        </span>
       </h2>
-
+  
       {error && (
         <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4"
+          className="bg-red-500 text-white text-sm px-4 py-3 rounded-md mb-4"
           role="alert"
         >
-          <span className="block sm:inline">{error}</span>
+          {error}
         </div>
       )}
-
-      <form className="my-8" onSubmit={handleSubmit}>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="username">Username</Label>
+  
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <LabelInputContainer>
+          <Label htmlFor="username" className="text-neutral-700 font-medium">
+            Username
+          </Label>
           <Input
             id="username"
             name="username"
-            placeholder="mozaldy"
+            placeholder="yourusername"
             type="text"
             required
             disabled={isLoading}
+            className="w-full px-4 py-2 border border-neutral-400 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:outline-none"
           />
         </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="password">Password</Label>
+        <LabelInputContainer>
+          <Label htmlFor="password" className="text-neutral-700 font-medium">
+            Password
+          </Label>
           <Input
             id="password"
             name="password"
@@ -87,41 +95,41 @@ export default function SigninForm() {
             type="password"
             required
             disabled={isLoading}
+            className="w-full px-4 py-2 border border-neutral-400 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:outline-none"
           />
         </LabelInputContainer>
         <button
-          className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] ${
-            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          className={`w-full px-4 py-2 rounded-lg font-medium text-white bg-neutral-900 ${
+            isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-black"
           }`}
           type="submit"
           disabled={isLoading}
         >
           {isLoading ? "Signing in..." : "Sign in"}
-          <BottomGradient />
         </button>
-        <p className="text-neutral-600 text-sm max-w-sm mt-5 text-center dark:text-neutral-300">
-          No account yet?{" "}
-          <Link href={"/signup"} className="font-black">
-            Sign up.
+        <p className="text-sm text-center text-neutral-600">
+          Don't have an account?{" "}
+          <Link href={"/signup"} className="font-bold text-neutral-900 underline">
+            Sign up
           </Link>
         </p>
-        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-        <div className="flex flex-col space-y-4">
-          <button
-            className="relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="button"
-            onClick={() => {
-              console.log("Google sign in clicked");
-            }}
-          >
-            <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-              Google
-            </span>
-            <BottomGradient />
-          </button>
-        </div>
       </form>
+  
+      <div className="my-6 border-t border-neutral-300"></div>
+  
+      <div className="flex justify-center">
+        <button
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg border border-neutral-400 bg-white text-black w-full hover:bg-neutral-100"
+          type="button"
+          onClick={() => {
+            console.log("Google sign in clicked");
+          }}
+        >
+          <IconBrandGoogle className="h-5 w-5" />
+          <span className="font-medium">Sign in with Google</span>
+        </button>
+      </div>
     </div>
   );
+  
 }
